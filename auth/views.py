@@ -2,6 +2,7 @@ from django.http import JsonResponse
 
 from .forms import CustomUserCreationForm
 
+
 def register(request):
     form = CustomUserCreationForm(request.POST)
 
