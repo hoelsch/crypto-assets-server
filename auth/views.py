@@ -6,8 +6,7 @@ def register(request):
     form = CustomUserCreationForm(request.POST)
 
     if not form.is_valid():
-        # TODO: implement error case
-        pass
+        return JsonResponse({"errors": form.errors}, status=400)
 
     form.save()
 
