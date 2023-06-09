@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -28,6 +28,11 @@ def login_user(request):
     user = form.get_user()
     login(request, user)
 
-    return JsonResponse(
-        {"message": "Successfully logged in", "user_id": user.id}, status=200
-    )
+    return JsonResponse({"message": "Successfully logged in", "user_id": user.id})
+
+
+@require_http_methods(["POST"])
+def logout_user(request):
+    logout(request)
+
+    return JsonResponse({"message": "Successfully logged out"})
