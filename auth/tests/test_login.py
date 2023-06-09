@@ -1,5 +1,6 @@
 from django.test import Client, TestCase
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class LoginTestCase(TestCase):
@@ -16,7 +17,7 @@ class LoginTestCase(TestCase):
 
     def test_successful_login(self):
         response = self.client.post(
-            "/login",
+            reverse("login"),
             {
                 "username": self.username,
                 "password": self.password,
@@ -33,7 +34,7 @@ class LoginTestCase(TestCase):
 
     def test_login_with_wrong_password(self):
         response = self.client.post(
-            "/login",
+            reverse("login"),
             {
                 "username": self.username,
                 "password": "wrong_password",
@@ -50,7 +51,7 @@ class LoginTestCase(TestCase):
 
     def test_login_with_non_existing_user(self):
         response = self.client.post(
-            "/login",
+            reverse("login"),
             {
                 "username": "non_existing_user",
                 "password": self.password,

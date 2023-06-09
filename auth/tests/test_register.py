@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
+from django.urls import reverse
 
 
 class RegistrationTestCase(TestCase):
@@ -11,7 +12,7 @@ class RegistrationTestCase(TestCase):
 
     def test_successful_register(self):
         response = self.client.post(
-            "/register",
+            reverse("register"),
             {
                 "username": self.username,
                 "password1": self.password,
@@ -44,7 +45,7 @@ class RegistrationTestCase(TestCase):
         ]
 
         for data in test_cases:
-            response = self.client.post("/register", data)
+            response = self.client.post(reverse("register"), data)
             self.assertEqual(response.status_code, 400)
 
     def test_register_with_invalid_inputs(self):
@@ -76,12 +77,12 @@ class RegistrationTestCase(TestCase):
         ]
 
         for data in test_cases:
-            response = self.client.post("/register", data)
+            response = self.client.post(reverse("register"), data)
             self.assertEqual(response.status_code, 400)
 
     def test_register_duplicate_username(self):
         response = self.client.post(
-            "/register",
+            reverse("register"),
             {
                 "username": self.username,
                 "password1": self.password,
@@ -91,7 +92,7 @@ class RegistrationTestCase(TestCase):
         )
 
         response = self.client.post(
-            "/register",
+            reverse("register"),
             {
                 "username": self.username,
                 "password1": self.password,
@@ -104,7 +105,7 @@ class RegistrationTestCase(TestCase):
 
     def test_register_duplicate_email(self):
         response = self.client.post(
-            "/register",
+            reverse("register"),
             {
                 "username": self.username,
                 "password1": self.password,
@@ -114,7 +115,7 @@ class RegistrationTestCase(TestCase):
         )
 
         response = self.client.post(
-            "/register",
+            reverse("register"),
             {
                 "username": "new_user",
                 "password1": self.password,
