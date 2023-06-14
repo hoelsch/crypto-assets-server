@@ -1,4 +1,4 @@
-from django.core.management import call_command
+from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -24,7 +24,12 @@ class CryptoTestCase(TestCase):
         for crypto in self.cryptos:
             Crypto.objects.create(**crypto)
 
-    def test_get_cryptos(self):
+        user = User.objects.create_user(
+            username="test", password="Test1234", email="test@test.com"
+        )
+        self.client.login(username=user.username, password="Test1234")
+
+    def test_cryptos_returns_correct_data(self):
         response = self.client.get(reverse("cryptos"))
 
         self.assertEqual(response.status_code, 200)
@@ -34,3 +39,33 @@ class CryptoTestCase(TestCase):
         cryptos = json_data["cryptos"]
 
         self.assertListEqual(cryptos, self.cryptos)
+
+    def test_cryptos_with_empty_result(self):
+        Crypto.objects.all().delete()
+        response = self.client.get(reverse("cryptos"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+
+        json_data = response.json()
+        cryptos = json_data["cryptos"]
+
+        self.assertListEqual(cryptos, [])
+
+    def test_cryptos_unauthorized_user_access(self):
+        self.client.logout()
+        response = self.client.get(reverse("cryptos"))
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response["Content-Type"], "application/json")
+
+        json_data = response.json()
+
+        self.assertEqual(json_data, {})
+
+    def test_cryptos_only_allows_get_requests(self):
+        http_methods = ["post", "patch", "put", "delete"]
+
+        for method in http_methods:
+            response = getattr(self.client, method)(reverse("cryptos"))
+            self.assertEqual(response.status_code, 405)
