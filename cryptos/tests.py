@@ -5,7 +5,7 @@ from django.urls import reverse
 from .models import Crypto
 
 
-class CryptoTestCase(TestCase):
+class ListCryptosTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.cryptos = [
@@ -29,7 +29,7 @@ class CryptoTestCase(TestCase):
         )
         self.client.login(username=user.username, password="Test1234")
 
-    def test_cryptos_returns_correct_data(self):
+    def test_list_cryptos_returns_correct_data(self):
         response = self.client.get(reverse("cryptos"))
 
         self.assertEqual(response.status_code, 200)
@@ -40,7 +40,7 @@ class CryptoTestCase(TestCase):
 
         self.assertListEqual(cryptos, self.cryptos)
 
-    def test_cryptos_with_empty_result(self):
+    def test_list_cryptos_with_empty_result(self):
         Crypto.objects.all().delete()
         response = self.client.get(reverse("cryptos"))
 
@@ -52,7 +52,7 @@ class CryptoTestCase(TestCase):
 
         self.assertListEqual(cryptos, [])
 
-    def test_cryptos_unauthorized_user_access(self):
+    def test_user_must_be_logged_in_to_list_cryptos(self):
         self.client.logout()
         response = self.client.get(reverse("cryptos"))
 
@@ -63,7 +63,7 @@ class CryptoTestCase(TestCase):
 
         self.assertEqual(json_data, {})
 
-    def test_cryptos_only_allows_get_requests(self):
+    def test_list_cryptos_only_allows_get_requests(self):
         http_methods = ["post", "patch", "put", "delete"]
 
         for method in http_methods:
