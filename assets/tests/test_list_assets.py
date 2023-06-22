@@ -88,7 +88,7 @@ class ListAssetsTestCase(TestCase):
 
         self.assertIn("error", json_data)
 
-    def test_user_can_only_list_own_assets(self):
+    def test_user_cannot_list_assets_of_other_users(self):
         another_user = User.objects.create_user(
             username="new_user", password="Test1234", email="new_user@test.com"
         )
@@ -105,13 +105,11 @@ class ListAssetsTestCase(TestCase):
 
         self.assertIn("error", json_data)
 
-        print(json_data["error"])
-
     def test_list_assets_only_allows_get_requests(self):
         http_methods = ["post", "patch", "put", "delete"]
 
         for method in http_methods:
-            response = getattr(self.client, method)(
-                reverse("list-assets", kwargs={"user_id": self.user.id})
+            response = self.client.generic(
+                method, reverse("list-assets", kwargs={"user_id": self.user.id})
             )
             self.assertEqual(response.status_code, 405)
