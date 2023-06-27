@@ -154,3 +154,37 @@ class AssetCreateUpdateView(View):
                 "new_amount": amount,
             }
         )
+
+    def delete(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {"error": "Only logged in users can delete assets."}, status=401
+            )
+
+        user_id = kwargs["user_id"]
+
+        if not request.user.id == user_id:
+            return JsonResponse(
+                {
+                    "error": (
+                        f"User {request.user.id} is not allowed to delete assets of user {user_id}. "
+                        f"Users can only delete their own assets"
+                    )
+                },
+                status=403,
+            )
+
+        crypto_name = kwargs["crypto"]
+
+        try:
+            asset = Asset.objects.get(user=request.user, crypto__name=crypto_name)
+            asset.delete()
+        except Asset.DoesNotExist:
+            return JsonResponse(
+                {
+                    "error": f"Cannot delete asset '{crypto_name}' because it does not exist"
+                },
+                status=404,
+            )
+
+        return JsonResponse({"message": f"Successfully deleted asset {crypto_name}"})
