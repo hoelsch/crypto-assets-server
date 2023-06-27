@@ -7,7 +7,7 @@ from assets.models import Asset
 from cryptos.models import Crypto
 
 
-class CreateAssetTestCase(TestCase):
+class UpdateAssetTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
