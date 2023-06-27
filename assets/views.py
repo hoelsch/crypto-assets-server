@@ -5,24 +5,12 @@ import json
 from .models import Asset
 from .forms import AssetCreateUpdateForm
 from cryptos.models import Crypto
-from crypto_assets_server.mixins import JsonResponseLoginRequiredMixin
+from crypto_assets_server.mixins import CustomLoginRequiredMixin
+from crypto_assets_server.mixins import UserAccessOwnResourcesMixin
 
 
-class AssetListView(JsonResponseLoginRequiredMixin, View):
+class AssetListView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View):
     def get(self, request, *args, **kwargs):
-        user_id = kwargs["user_id"]
-
-        if not request.user.id == user_id:
-            return JsonResponse(
-                {
-                    "error": (
-                        f"User {request.user.id} is not allowed to list assets of user {user_id}. "
-                        f"Users can only list their own assets"
-                    )
-                },
-                status=403,
-            )
-
         queryset = Asset.objects.filter(user=request.user)
         assets = []
 
@@ -38,21 +26,10 @@ class AssetListView(JsonResponseLoginRequiredMixin, View):
         return JsonResponse({"assets": assets})
 
 
-class AssetCreateUpdateView(JsonResponseLoginRequiredMixin, View):
+class AssetCreateUpdateView(
+    CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View
+):
     def post(self, request, *args, **kwargs):
-        user_id = kwargs["user_id"]
-
-        if not request.user.id == user_id:
-            return JsonResponse(
-                {
-                    "error": (
-                        f"User {request.user.id} is not allowed to create assets for user {user_id}. "
-                        f"Users can only create assets for themselves"
-                    )
-                },
-                status=403,
-            )
-
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -92,19 +69,6 @@ class AssetCreateUpdateView(JsonResponseLoginRequiredMixin, View):
         )
 
     def put(self, request, *args, **kwargs):
-        user_id = kwargs["user_id"]
-
-        if not request.user.id == user_id:
-            return JsonResponse(
-                {
-                    "error": (
-                        f"User {request.user.id} is not allowed to create assets for user {user_id}. "
-                        f"Users can only create assets for themselves"
-                    )
-                },
-                status=403,
-            )
-
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -142,19 +106,6 @@ class AssetCreateUpdateView(JsonResponseLoginRequiredMixin, View):
         )
 
     def delete(self, request, *args, **kwargs):
-        user_id = kwargs["user_id"]
-
-        if not request.user.id == user_id:
-            return JsonResponse(
-                {
-                    "error": (
-                        f"User {request.user.id} is not allowed to delete assets of user {user_id}. "
-                        f"Users can only delete their own assets"
-                    )
-                },
-                status=403,
-            )
-
         crypto_name = kwargs["crypto"]
 
         try:
