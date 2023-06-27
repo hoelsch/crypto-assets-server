@@ -61,7 +61,7 @@ class ListCryptosTestCase(TestCase):
 
         json_data = response.json()
 
-        self.assertEqual(json_data, {})
+        self.assertIn("error", json_data)
 
     def test_list_cryptos_only_allows_get_requests(self):
         http_methods = ["post", "patch", "put", "delete"]

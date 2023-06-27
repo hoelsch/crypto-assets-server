@@ -5,15 +5,11 @@ import json
 from .models import Asset
 from .forms import AssetCreateUpdateForm
 from cryptos.models import Crypto
+from crypto_assets_server.mixins import JsonResponseLoginRequiredMixin
 
 
-class AssetListView(View):
+class AssetListView(JsonResponseLoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Only logged in users can list assets."}, status=401
-            )
-
         user_id = kwargs["user_id"]
 
         if not request.user.id == user_id:
@@ -42,13 +38,8 @@ class AssetListView(View):
         return JsonResponse({"assets": assets})
 
 
-class AssetCreateUpdateView(View):
+class AssetCreateUpdateView(JsonResponseLoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Only logged in users can create assets."}, status=401
-            )
-
         user_id = kwargs["user_id"]
 
         if not request.user.id == user_id:
@@ -101,11 +92,6 @@ class AssetCreateUpdateView(View):
         )
 
     def put(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Only logged in users can create assets."}, status=401
-            )
-
         user_id = kwargs["user_id"]
 
         if not request.user.id == user_id:
@@ -156,11 +142,6 @@ class AssetCreateUpdateView(View):
         )
 
     def delete(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return JsonResponse(
-                {"error": "Only logged in users can delete assets."}, status=401
-            )
-
         user_id = kwargs["user_id"]
 
         if not request.user.id == user_id:
