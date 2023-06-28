@@ -26,97 +26,86 @@ class AssetListView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View)
         return JsonResponse({"assets": assets})
 
 
-class AssetCreateUpdateView(
-    CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View
-):
+class AssetManagementView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View):
     def post(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"error": "Invalid JSON data in request body"}, status=400
-            )
-
-        form = AssetCreateUpdateForm(data)
-        if not form.is_valid():
-            return JsonResponse({"error": form.errors}, status=400)
-
-        amount = data["amount"]
-        crypto_name = kwargs["crypto"]
-
-        try:
-            crypto = Crypto.objects.get(name=crypto_name)
-        except Crypto.DoesNotExist:
-            return JsonResponse(
-                {"error": f"Crypto {crypto_name} is not supported"}, status=400
-            )
-
-        try:
-            asset = Asset.objects.get(user=request.user, crypto=crypto)
-            asset.amount += amount
-            asset.save()
-            new_amount = asset.amount
-        except Asset.DoesNotExist:
-            Asset.objects.create(user=request.user, crypto=crypto, amount=amount)
-            new_amount = amount
-
-        return JsonResponse(
-            {
-                "message": f"Successfully added {amount} {crypto_name} to assets",
-                "crypto": crypto_name,
-                "new_amount": new_amount,
-            }
-        )
+        return self._create_or_update(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"error": "Invalid JSON data in request body"}, status=400
-            )
+        return self._create_or_update(request, *args, **kwargs)
 
-        form = AssetCreateUpdateForm(data)
-        if not form.is_valid():
-            return JsonResponse({"error": form.errors}, status=400)
-
-        amount = data["amount"]
-        crypto_name = kwargs["crypto"]
-
-        try:
-            crypto = Crypto.objects.get(name=crypto_name)
-        except Crypto.DoesNotExist:
-            return JsonResponse(
-                {"error": f"Crypto {crypto_name} is not supported"}, status=400
-            )
+    def delete(self, request, *args, **kwargs):
+        crypto, err = self._validate_and_return_crypto(**kwargs)
+        if err is not None:
+            return err
 
         try:
             asset = Asset.objects.get(user=request.user, crypto=crypto)
-            asset.amount = amount
-            asset.save()
-        except Asset.DoesNotExist:
-            Asset.objects.create(user=request.user, crypto=crypto, amount=amount)
-
-        return JsonResponse(
-            {
-                "message": f"Successfully added {amount} {crypto_name} to assets",
-                "crypto": crypto_name,
-                "new_amount": amount,
-            }
-        )
-
-    def delete(self, request, *args, **kwargs):
-        crypto_name = kwargs["crypto"]
-
-        try:
-            asset = Asset.objects.get(user=request.user, crypto__name=crypto_name)
             asset.delete()
         except Asset.DoesNotExist:
             return JsonResponse(
                 {
-                    "error": f"Cannot delete asset '{crypto_name}' because it does not exist"
+                    "error": f"Cannot delete asset '{crypto.name}' because it does not exist"
                 },
                 status=404,
             )
 
-        return JsonResponse({"message": f"Successfully deleted asset {crypto_name}"})
+        return JsonResponse({"message": f"Successfully deleted asset {crypto.name}"})
+
+    def _create_or_update(self, request, *args, **kwargs):
+        form, err = self._validate_and_return_request_data(request.body)
+        if err is not None:
+            return err
+
+        crypto, err = self._validate_and_return_crypto(**kwargs)
+        if err is not None:
+            return err
+
+        amount = form.cleaned_data["amount"]
+
+        asset, _ = Asset.objects.get_or_create(
+            user=request.user, crypto=crypto, defaults={"amount": 0}
+        )
+
+        if request.method == "POST":
+            asset.amount += amount
+        elif request.method == "PUT":
+            asset.amount = amount
+
+        asset.save()
+
+        return JsonResponse(
+            {
+                "message": f"Successfully added {amount} {crypto.name} to assets",
+                "crypto": crypto.name,
+                "new_amount": asset.amount,
+            }
+        )
+
+    def _validate_and_return_request_data(self, body):
+        try:
+            data = json.loads(body)
+        except json.JSONDecodeError:
+            return None, JsonResponse(
+                {"error": "Invalid JSON data in request body"}, status=400
+            )
+
+        form = AssetCreateUpdateForm(data)
+        if not form.is_valid():
+            return None, JsonResponse({"error": form.errors}, status=400)
+
+        return form, None
+
+    def _validate_and_return_crypto(self, **kwargs):
+        crypto_name = kwargs.get("crypto")
+
+        if not crypto_name:
+            return JsonResponse({"error": "Crypto parameter is missing"}, status=400)
+
+        try:
+            crypto = Crypto.objects.get(name=crypto_name)
+        except Crypto.DoesNotExist:
+            return None, JsonResponse(
+                {"error": f"Crypto {crypto_name} is not supported"}, status=400
+            )
+
+        return crypto, None

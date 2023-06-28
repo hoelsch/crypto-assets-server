@@ -3,10 +3,10 @@ from django.views import View
 from django.views.decorators.http import require_http_methods
 
 from .models import Crypto
-from crypto_assets_server.mixins import JsonResponseLoginRequiredMixin
+from crypto_assets_server.mixins import CustomLoginRequiredMixin
 
 
-class CryptoListView(JsonResponseLoginRequiredMixin, View):
+class CryptoListView(CustomLoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         """
         Returns a JSON response containing a list of supported cryptocurrencies.
