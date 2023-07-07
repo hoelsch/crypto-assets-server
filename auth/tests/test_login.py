@@ -1,6 +1,7 @@
 from django.test import Client, TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
+import json
 
 
 class LoginTestCase(TestCase):
@@ -18,10 +19,13 @@ class LoginTestCase(TestCase):
     def test_successful_login(self):
         response = self.client.post(
             reverse("login"),
-            {
-                "username": self.username,
-                "password": self.password,
-            },
+            data=json.dumps(
+                {
+                    "username": self.username,
+                    "password": self.password,
+                }
+            ),
+            content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 200)
@@ -35,10 +39,13 @@ class LoginTestCase(TestCase):
     def test_login_with_wrong_password(self):
         response = self.client.post(
             reverse("login"),
-            {
-                "username": self.username,
-                "password": "wrong_password",
-            },
+            data=json.dumps(
+                {
+                    "username": self.username,
+                    "password": "wrong_password",
+                }
+            ),
+            content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 400)
@@ -52,10 +59,13 @@ class LoginTestCase(TestCase):
     def test_login_with_non_existing_user(self):
         response = self.client.post(
             reverse("login"),
-            {
-                "username": "non_existing_user",
-                "password": self.password,
-            },
+            data=json.dumps(
+                {
+                    "username": "non_existing_user",
+                    "password": self.password,
+                }
+            ),
+            content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 400)

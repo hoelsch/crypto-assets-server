@@ -2,13 +2,19 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+import json
 
 from .forms import CustomUserCreationForm
 
 
 @require_http_methods(["POST"])
 def register_user(request):
-    form = CustomUserCreationForm(request.POST)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data in request body"}, status=400)
+
+    form = CustomUserCreationForm(data)
 
     if not form.is_valid():
         return JsonResponse({"errors": form.errors}, status=400)
@@ -20,7 +26,12 @@ def register_user(request):
 
 @require_http_methods(["POST"])
 def login_user(request):
-    form = AuthenticationForm(request, data=request.POST)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError as err:
+        return JsonResponse({"error": "Invalid JSON data in request body"}, status=400)
+
+    form = AuthenticationForm(request, data=data)
 
     if not form.is_valid():
         return JsonResponse({"error": "Invalid username or password"}, status=400)

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
+import json
 
 
 class RegistrationTestCase(TestCase):
@@ -13,12 +14,15 @@ class RegistrationTestCase(TestCase):
     def test_successful_register(self):
         response = self.client.post(
             reverse("register"),
-            {
-                "username": self.username,
-                "password1": self.password,
-                "password2": self.password,
-                "email": self.email,
-            },
+            data=json.dumps(
+                {
+                    "username": self.username,
+                    "password1": self.password,
+                    "password2": self.password,
+                    "email": self.email,
+                }
+            ),
+            content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 201)
