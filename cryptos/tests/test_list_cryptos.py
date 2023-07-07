@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .models import Crypto
+from cryptos.models import Crypto
 
 
 class ListCryptosTestCase(TestCase):
