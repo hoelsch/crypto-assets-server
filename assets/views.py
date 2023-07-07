@@ -20,6 +20,8 @@ class AssetListView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View)
                     "crypto_name": asset.crypto.name,
                     "user_id": asset.user.id,
                     "amount": asset.amount,
+                    "abbreviation": asset.crypto.abbreviation,
+                    "iconurl": asset.crypto.iconurl,
                 }
             )
 
@@ -97,9 +99,6 @@ class AssetManagementView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin,
 
     def _validate_and_return_crypto(self, **kwargs):
         crypto_name = kwargs.get("crypto")
-
-        if not crypto_name:
-            return JsonResponse({"error": "Crypto parameter is missing"}, status=400)
 
         try:
             crypto = Crypto.objects.get(name=crypto_name)

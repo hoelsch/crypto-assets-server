@@ -35,11 +35,15 @@ class ListAssetsTestCase(TestCase):
                 "crypto_name": "bitcoin",
                 "user_id": self.user.id,
                 "amount": 10.5,
+                "abbreviation": "BTC",
+                "iconurl": "https://test.com/test1.png",
             },
             {
                 "crypto_name": "ethereum",
                 "user_id": self.user.id,
                 "amount": 3,
+                "abbreviation": "ETH",
+                "iconurl": "https://test.com/test2.png",
             },
         ]
 
