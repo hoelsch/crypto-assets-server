@@ -104,7 +104,7 @@ class AssetManagementView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin,
             crypto = Crypto.objects.get(name=crypto_name)
         except Crypto.DoesNotExist:
             return None, JsonResponse(
-                {"error": f"Crypto {crypto_name} is not supported"}, status=400
+                {"error": f"Crypto {crypto_name} not found"}, status=404
             )
 
         return crypto, None
