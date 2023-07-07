@@ -25,7 +25,7 @@ class DeleteAssetTestCase(TestCase):
     def test_delete_asset(self):
         response = self.client.delete(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
         )
@@ -45,7 +45,7 @@ class DeleteAssetTestCase(TestCase):
 
         response = self.client.delete(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
         )
@@ -62,7 +62,7 @@ class DeleteAssetTestCase(TestCase):
 
         response = self.client.delete(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
         )
@@ -82,7 +82,7 @@ class DeleteAssetTestCase(TestCase):
 
         response = self.client.delete(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
         )

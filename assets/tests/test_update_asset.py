@@ -30,7 +30,7 @@ class UpdateAssetTestCase(TestCase):
 
         response = self.client.put(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": crypto_name},
             ),
             data=body,
@@ -62,7 +62,7 @@ class UpdateAssetTestCase(TestCase):
 
         response = self.client.put(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": crypto_name},
             ),
             data=body,
@@ -88,7 +88,7 @@ class UpdateAssetTestCase(TestCase):
     def test_update_asset_fails_for_unsupported_crypto(self):
         response = self.client.put(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "unsupported_coin"},
             ),
             data=json.dumps({"amount": 1234}),
@@ -113,7 +113,7 @@ class UpdateAssetTestCase(TestCase):
         for data in test_cases:
             response = self.client.put(
                 reverse(
-                    "create-update-assets",
+                    "manage-assets",
                     kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
                 ),
                 data=data,
@@ -130,7 +130,7 @@ class UpdateAssetTestCase(TestCase):
     def test_update_asset_fails_for_non_json_content(self):
         response = self.client.put(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data={"test": "a"},
@@ -150,7 +150,7 @@ class UpdateAssetTestCase(TestCase):
 
         response = self.client.put(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data=body,
@@ -174,7 +174,7 @@ class UpdateAssetTestCase(TestCase):
 
         response = self.client.put(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data=body,

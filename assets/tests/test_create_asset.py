@@ -39,7 +39,7 @@ class CreateAssetTestCase(TestCase):
 
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": crypto_name},
             ),
             data=body,
@@ -71,7 +71,7 @@ class CreateAssetTestCase(TestCase):
 
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": crypto_name},
             ),
             data=body,
@@ -105,7 +105,7 @@ class CreateAssetTestCase(TestCase):
         for data in test_cases:
             response = self.client.post(
                 reverse(
-                    "create-update-assets",
+                    "manage-assets",
                     kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
                 ),
                 data=data,
@@ -122,7 +122,7 @@ class CreateAssetTestCase(TestCase):
     def test_create_asset_fails_for_non_json_content_type(self):
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data={"test": "a"},
@@ -140,7 +140,7 @@ class CreateAssetTestCase(TestCase):
 
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "unsupported_coin"},
             ),
             data=body,
@@ -161,7 +161,7 @@ class CreateAssetTestCase(TestCase):
 
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data=body,
@@ -185,7 +185,7 @@ class CreateAssetTestCase(TestCase):
 
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data=body,
@@ -212,7 +212,7 @@ class CreateAssetTestCase(TestCase):
 
         response = self.client.post(
             reverse(
-                "create-update-assets",
+                "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
             ),
             data=body,

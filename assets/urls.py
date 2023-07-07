@@ -7,6 +7,6 @@ urlpatterns = [
     path(
         "users/<int:user_id>/assets/<str:crypto>",
         AssetManagementView.as_view(),
-        name="create-update-assets",
+        name="manage-assets",
     ),
 ]
