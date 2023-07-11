@@ -22,7 +22,7 @@ class DeleteAssetTestCase(TestCase):
 
         self.client.login(username=self.user.username, password="Test1234")
 
-    def test_delete_asset(self):
+    def _delete_asset(self):
         response = self.client.delete(
             reverse(
                 "manage-assets",
@@ -30,12 +30,13 @@ class DeleteAssetTestCase(TestCase):
             ),
         )
 
-        self.assertEqual(response.status_code, 200)
+        return response
+
+    def test_delete_asset(self):
+        response = self._delete_asset()
+
+        self.assertContains(response, "message", status_code=200)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("message", json_data)
 
         with self.assertRaises(Asset.DoesNotExist):
             Asset.objects.get(user=self.user, crypto__name="bitcoin")
@@ -43,36 +44,18 @@ class DeleteAssetTestCase(TestCase):
     def test_delete_fails_for_non_existing_asset(self):
         self.asset.delete()
 
-        response = self.client.delete(
-            reverse(
-                "manage-assets",
-                kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
-            ),
-        )
+        response = self._delete_asset()
 
-        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, "error", status_code=404)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_delete_asset_fails_if_user_not_logged_in(self):
         self.client.logout()
 
-        response = self.client.delete(
-            reverse(
-                "manage-assets",
-                kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
-            ),
-        )
+        response = self._delete_asset()
 
-        self.assertEqual(response.status_code, 401)
+        self.assertContains(response, "error", status_code=401)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_user_cannot_delete_asset_of_other_users(self):
         another_user = User.objects.create_user(
@@ -80,19 +63,10 @@ class DeleteAssetTestCase(TestCase):
         )
         self.client.login(username=another_user.username, password="Test1234")
 
-        response = self.client.delete(
-            reverse(
-                "manage-assets",
-                kwargs={"user_id": self.user.id, "crypto": "bitcoin"},
-            ),
-        )
+        response = self._delete_asset()
 
-        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, "error", status_code=403)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
         try:
             Asset.objects.get(user=self.user, crypto__name="bitcoin")
