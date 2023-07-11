@@ -9,43 +9,18 @@ from cryptos.models import Crypto
 class ListAssetsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.cryptos = [
-            {
-                "name": "bitcoin",
-                "abbreviation": "BTC",
-                "iconurl": "https://test.com/test1.png",
-            },
-            {
-                "name": "ethereum",
-                "abbreviation": "ETH",
-                "iconurl": "https://test.com/test2.png",
-            },
-        ]
 
-        for crypto in self.cryptos:
-            Crypto.objects.create(**crypto)
+        Crypto.objects.create(
+            name="bitcoin", abbreviation="BTC", iconurl="https://test.com/test1.png"
+        )
+        Crypto.objects.create(
+            name="ethereum", abbreviation="ETH", iconurl="https://test.com/test2.png"
+        )
 
         self.user = User.objects.create_user(
             username="test", password="Test1234", email="test@test.com"
         )
         self.client.login(username=self.user.username, password="Test1234")
-
-        self.assets = [
-            {
-                "crypto_name": "bitcoin",
-                "user_id": self.user.id,
-                "amount": 10.5,
-                "abbreviation": "BTC",
-                "iconurl": "https://test.com/test1.png",
-            },
-            {
-                "crypto_name": "ethereum",
-                "user_id": self.user.id,
-                "amount": 3,
-                "abbreviation": "ETH",
-                "iconurl": "https://test.com/test2.png",
-            },
-        ]
 
         bitcoin = Crypto.objects.get(name="bitcoin")
         Asset.objects.create(user=self.user, crypto=bitcoin, amount=10.5)
@@ -63,7 +38,24 @@ class ListAssetsTestCase(TestCase):
         json_data = response.json()
         assets = json_data["assets"]
 
-        self.assertListEqual(assets, self.assets)
+        expected_assets = [
+            {
+                "crypto_name": "bitcoin",
+                "user_id": self.user.id,
+                "amount": 10.5,
+                "abbreviation": "BTC",
+                "iconurl": "https://test.com/test1.png",
+            },
+            {
+                "crypto_name": "ethereum",
+                "user_id": self.user.id,
+                "amount": 3,
+                "abbreviation": "ETH",
+                "iconurl": "https://test.com/test2.png",
+            },
+        ]
+
+        self.assertListEqual(assets, expected_assets)
 
     def test_list_assets_with_empty_result(self):
         Asset.objects.all().delete()
@@ -85,12 +77,8 @@ class ListAssetsTestCase(TestCase):
             reverse("list-assets", kwargs={"user_id": self.user.id})
         )
 
-        self.assertEqual(response.status_code, 401)
+        self.assertContains(response, "error", status_code=401)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_user_cannot_list_assets_of_other_users(self):
         another_user = User.objects.create_user(
@@ -102,12 +90,8 @@ class ListAssetsTestCase(TestCase):
             reverse("list-assets", kwargs={"user_id": self.user.id})
         )
 
-        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, "error", status_code=403)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_list_assets_only_allows_get_requests(self):
         http_methods = ["post", "patch", "put", "delete"]
