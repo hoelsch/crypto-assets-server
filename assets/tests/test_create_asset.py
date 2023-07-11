@@ -38,16 +38,15 @@ class CreateAssetTestCase(TestCase):
 
         response = self._create_asset(crypto_name, {"amount": amount})
 
+        expected_json = {
+            "message": f"Successfully added {amount} bitcoin to assets",
+            "crypto": "bitcoin",
+            "new_amount": amount,
+        }
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
-        self.assertJSONEqual(
-            str(response.content, encoding="utf-8"),
-            {
-                "message": f"Successfully added {amount} bitcoin to assets",
-                "crypto": "bitcoin",
-                "new_amount": amount,
-            },
-        )
+        self.assertDictEqual(response.json(), expected_json)
 
         asset = Asset.objects.get(user=self.user, crypto__name=crypto_name)
 
@@ -59,17 +58,15 @@ class CreateAssetTestCase(TestCase):
 
         response = self._create_asset("bitcoin", {"amount": 1.5})
 
+        expected_json = {
+            "message": f"Successfully added 1.5 bitcoin to assets",
+            "crypto": "bitcoin",
+            "new_amount": 2.5,
+        }
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        self.assertJSONEqual(
-            str(response.content, encoding="utf-8"),
-            {
-                "message": f"Successfully added 1.5 bitcoin to assets",
-                "crypto": "bitcoin",
-                "new_amount": 2.5,
-            },
-        )
+        self.assertDictEqual(response.json(), expected_json)
 
         asset = Asset.objects.get(user=self.user, crypto__name="bitcoin")
 
@@ -85,12 +82,8 @@ class CreateAssetTestCase(TestCase):
         for data in test_cases:
             response = self._create_asset("bitcoin", data)
 
-            self.assertEqual(response.status_code, 400)
+            self.assertContains(response, "error", status_code=400)
             self.assertEqual(response["Content-Type"], "application/json")
-
-            json_data = response.json()
-
-            self.assertIn("error", json_data)
 
     def test_create_asset_fails_for_non_json_content_type(self):
         response = self.client.post(
@@ -101,34 +94,22 @@ class CreateAssetTestCase(TestCase):
             data={"test": "a"},
         )
 
-        self.assertEqual(response.status_code, 400)
+        self.assertContains(response, "error", status_code=400)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_create_asset_fails_for_unsupported_crypto(self):
         response = self._create_asset("unsupported_crypto", {"amount": 1})
 
-        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, "error", status_code=404)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_create_asset_fails_if_user_not_logged_in(self):
         self.client.logout()
 
         response = self._create_asset("bitcoin", {"amount": 1})
 
-        self.assertEqual(response.status_code, 401)
+        self.assertContains(response, "error", status_code=401)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_user_cannot_create_asset_for_other_users(self):
         another_user = User.objects.create_user(
@@ -138,12 +119,8 @@ class CreateAssetTestCase(TestCase):
 
         response = self._create_asset("bitcoin", {"amount": 1})
 
-        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, "error", status_code=403)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
 
     def test_user_cannot_increase_amount_of_asset_of_other_users(self):
         crypto = Crypto.objects.get(name="bitcoin")
@@ -156,9 +133,5 @@ class CreateAssetTestCase(TestCase):
 
         response = self._create_asset("bitcoin", {"amount": 1})
 
-        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, "error", status_code=403)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
