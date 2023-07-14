@@ -17,7 +17,7 @@ def register_user(request):
     form = CustomUserCreationForm(data)
 
     if not form.is_valid():
-        return JsonResponse({"errors": form.errors}, status=400)
+        return JsonResponse({"error": form.errors}, status=400)
 
     form.save()
 
