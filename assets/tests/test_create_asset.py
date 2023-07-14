@@ -20,13 +20,13 @@ class CreateAssetTestCase(TestCase):
         )
         self.client.login(username=self.user.username, password="Test1234")
 
-    def _create_asset(self, crypto_name, body):
+    def _create_asset(self, crypto_name, request_data):
         response = self.client.post(
             reverse(
                 "manage-assets",
                 kwargs={"user_id": self.user.id, "crypto": crypto_name},
             ),
-            data=json.dumps(body),
+            data=json.dumps(request_data),
             content_type="application/json",
         )
 
