@@ -8,7 +8,7 @@ from cryptos.models import Crypto
 class ListCryptosTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.cryptos = [
+        self.expected_cryptos = [
             {
                 "name": "bitcoin",
                 "abbreviation": "BTC",
@@ -21,7 +21,7 @@ class ListCryptosTestCase(TestCase):
             },
         ]
 
-        for crypto in self.cryptos:
+        for crypto in self.expected_cryptos:
             Crypto.objects.create(**crypto)
 
         user = User.objects.create_user(
@@ -38,7 +38,7 @@ class ListCryptosTestCase(TestCase):
         json_data = response.json()
         cryptos = json_data["cryptos"]
 
-        self.assertListEqual(cryptos, self.cryptos)
+        self.assertListEqual(cryptos, self.expected_cryptos)
 
     def test_list_cryptos_with_empty_result(self):
         Crypto.objects.all().delete()

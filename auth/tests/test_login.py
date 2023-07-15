@@ -50,9 +50,8 @@ class LoginTestCase(TestCase):
         self.assertEqual(response["Content-Type"], "application/json")
 
         json_data = response.json()
-        expected_error = json_data["error"]
 
-        self.assertEqual(expected_error, "Invalid username or password")
+        self.assertEqual(json_data["error"], "Invalid username or password")
 
     def test_login_with_non_existing_user(self):
         response = self._login("non_existing_user", self.password)
@@ -62,9 +61,8 @@ class LoginTestCase(TestCase):
         self.assertEqual(response["Content-Type"], "application/json")
 
         json_data = response.json()
-        expected_error = json_data["error"]
 
-        self.assertEqual(expected_error, "Invalid username or password")
+        self.assertEqual(json_data["error"], "Invalid username or password")
 
     def test_login_with_invalid_json_request_body(self):
         response = self.client.post(
