@@ -49,7 +49,11 @@ class RegistrationTestCase(TestCase):
         ]
 
         for data in test_cases:
-            response = self.client.post(reverse("register"), data)
+            response = self.client.post(
+                reverse("register"),
+                data=json.dumps(data),
+                content_type="application/json",
+            )
             self.assertEqual(response.status_code, 400)
 
     def test_register_with_invalid_inputs(self):
@@ -81,28 +85,38 @@ class RegistrationTestCase(TestCase):
         ]
 
         for data in test_cases:
-            response = self.client.post(reverse("register"), data)
+            response = self.client.post(
+                reverse("register"),
+                data=json.dumps(data),
+                content_type="application/json",
+            )
             self.assertEqual(response.status_code, 400)
 
     def test_register_duplicate_username(self):
         response = self.client.post(
             reverse("register"),
-            {
-                "username": self.username,
-                "password1": self.password,
-                "password2": self.password,
-                "email": self.email,
-            },
+            data=json.dumps(
+                {
+                    "username": self.username,
+                    "password1": self.password,
+                    "password2": self.password,
+                    "email": self.email,
+                }
+            ),
+            content_type="application/json",
         )
 
         response = self.client.post(
             reverse("register"),
-            {
-                "username": self.username,
-                "password1": self.password,
-                "password2": self.password,
-                "email": "some.new@mail.com",
-            },
+            data=json.dumps(
+                {
+                    "username": self.username,
+                    "password1": self.password,
+                    "password2": self.password,
+                    "email": "some.new@mail.com",
+                }
+            ),
+            content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 400)
@@ -110,22 +124,28 @@ class RegistrationTestCase(TestCase):
     def test_register_duplicate_email(self):
         response = self.client.post(
             reverse("register"),
-            {
-                "username": self.username,
-                "password1": self.password,
-                "password2": self.password,
-                "email": self.email,
-            },
+            data=json.dumps(
+                {
+                    "username": self.username,
+                    "password1": self.password,
+                    "password2": self.password,
+                    "email": self.email,
+                }
+            ),
+            content_type="application/json",
         )
 
         response = self.client.post(
             reverse("register"),
-            {
-                "username": "new_user",
-                "password1": self.password,
-                "password2": self.password,
-                "email": self.email,
-            },
+            data=json.dumps(
+                {
+                    "username": "new_user",
+                    "password1": self.password,
+                    "password2": self.password,
+                    "email": self.email,
+                }
+            ),
+            content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 400)
