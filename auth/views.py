@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 import json
 
 from .forms import CustomUserCreationForm
+from crypto_assets_server.errors import InvalidJsonErrorResponse
 
 
 @require_http_methods(["POST"])
@@ -12,7 +13,7 @@ def register_user(request):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON data in request body"}, status=400)
+        return InvalidJsonErrorResponse()
 
     form = CustomUserCreationForm(data)
 
@@ -29,7 +30,7 @@ def login_user(request):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError as err:
-        return JsonResponse({"error": "Invalid JSON data in request body"}, status=400)
+        return InvalidJsonErrorResponse()
 
     form = AuthenticationForm(request, data=data)
 

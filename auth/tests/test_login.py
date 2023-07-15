@@ -75,3 +75,14 @@ class LoginTestCase(TestCase):
         json_data = response.json()
 
         self.assertEqual(json_data["error"], "Invalid username or password")
+
+    def test_login_with_invalid_json_request_body(self):
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": self.username,
+                "password": self.password,
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)

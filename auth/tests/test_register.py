@@ -149,3 +149,16 @@ class RegistrationTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_register_with_invalid_json_request_body(self):
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "new_user",
+                "password1": self.password,
+                "password2": self.password,
+                "email": self.email,
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)

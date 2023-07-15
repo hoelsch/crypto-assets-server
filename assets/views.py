@@ -5,6 +5,7 @@ import json
 from .models import Asset
 from .forms import AssetCreateUpdateForm
 from cryptos.models import Crypto
+from crypto_assets_server.errors import InvalidJsonErrorResponse
 from crypto_assets_server.mixins import CustomLoginRequiredMixin
 from crypto_assets_server.mixins import UserAccessOwnResourcesMixin
 
@@ -87,9 +88,7 @@ class AssetManagementView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin,
         try:
             data = json.loads(body)
         except json.JSONDecodeError:
-            return None, JsonResponse(
-                {"error": "Invalid JSON data in request body"}, status=400
-            )
+            return None, InvalidJsonErrorResponse()
 
         form = AssetCreateUpdateForm(data)
         if not form.is_valid():
