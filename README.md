@@ -31,7 +31,7 @@ python manage.py loaddata cryptos.json
 python manage.py runserver
 ```
 
-## Run Server in Docker Container
+### Run Server in Docker Container
 
 As an alternative, the app can also be executed in a Docker container:
 
