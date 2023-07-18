@@ -1,0 +1,29 @@
+[
+    {
+        "model": "cryptos.Crypto",
+        "pk": 1,
+        "fields": {
+            "name": "bitcoin",
+            "abbreviation": "BTC",
+            "iconurl": "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png"
+        }
+    },
+    {
+        "model": "cryptos.Crypto",
+        "pk": 2,
+        "fields": {
+            "name": "ethereum",
+            "abbreviation": "ETH",
+            "iconurl": "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
+        }
+    },
+    {
+        "model": "cryptos.Crypto",
+        "pk": 3,
+        "fields": {
+            "name": "cardano",
+            "abbreviation": "ADA",
+            "iconurl": "https://s2.coinmarketcap.com/static/img/coins/64x64/2010.png"
+        }
+    }
+]
