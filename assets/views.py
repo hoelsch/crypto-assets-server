@@ -1,13 +1,13 @@
+import json
 from django.http import JsonResponse
 from django.views import View
-import json
 
-from .models import Asset
-from .forms import AssetCreateUpdateForm
 from cryptos.models import Crypto
 from crypto_assets_server.errors import InvalidJsonErrorResponse
 from crypto_assets_server.mixins import CustomLoginRequiredMixin
 from crypto_assets_server.mixins import UserAccessOwnResourcesMixin
+from .models import Asset
+from .forms import AssetCreateUpdateForm
 
 
 class AssetListView(CustomLoginRequiredMixin, UserAccessOwnResourcesMixin, View):
