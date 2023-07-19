@@ -16,22 +16,22 @@ git clone https://github.com/hoelsch/crypto-assets-server.git
 cd crypto-assets-server
 ```
 
-2. Install dependencies
+3. Install dependencies
 ```sh
 python -m pip install -r requirements.txt
 ```
 
-3. Create database schema
+4. Create database schema
 ```sh
 python manage.py migrate
 ```
 
-4. Initialize database
+5. Initialize database
 ```sh
 python manage.py loaddata cryptos.json
 ```
 
-5. Run server
+6. Run server
 ```sh
 python manage.py runserver
 ```
