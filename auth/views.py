@@ -1,11 +1,11 @@
+import json
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-import json
 
-from .forms import CustomUserCreationForm
 from crypto_assets_server.errors import InvalidJsonErrorResponse
+from .forms import CustomUserCreationForm
 
 
 @require_http_methods(["POST"])
@@ -29,7 +29,7 @@ def register_user(request):
 def login_user(request):
     try:
         data = json.loads(request.body)
-    except json.JSONDecodeError as err:
+    except json.JSONDecodeError:
         return InvalidJsonErrorResponse()
 
     form = AuthenticationForm(request, data=data)

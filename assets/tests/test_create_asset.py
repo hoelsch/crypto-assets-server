@@ -59,7 +59,7 @@ class CreateAssetTestCase(TestCase):
         response = self._create_asset("bitcoin", {"amount": 1.5})
 
         expected_json = {
-            "message": f"Successfully added 1.5 bitcoin to assets",
+            "message": "Successfully added 1.5 bitcoin to assets",
             "crypto": "bitcoin",
             "new_amount": 2.5,
         }
