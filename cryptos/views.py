@@ -8,7 +8,7 @@ from crypto_assets_server.mixins import CustomLoginRequiredMixin
 
 
 class CryptoListView(CustomLoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         queryset = Crypto.objects.values("name", "abbreviation", "iconurl")
         result = list(queryset)
 
@@ -16,7 +16,7 @@ class CryptoListView(CustomLoginRequiredMixin, View):
 
 
 class CryptoPriceView(CustomLoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         crypto_name = kwargs.get("crypto")
 
         try:
