@@ -29,7 +29,22 @@ class CryptoPriceView(CustomLoginRequiredMixin, View):
         symbol = crypto.abbreviation + "EUR"
         url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
 
-        response = requests.get(url)
+        try:
+            response = requests.get(url, timeout=5)
+        except requests.Timeout:
+            return JsonResponse(
+                {
+                    "error": f"Timeout occurred while fetching the price of crypto {crypto_name}"
+                },
+                status=504,
+            )
+        except requests.RequestException as err:
+            return JsonResponse(
+                {
+                    "error": f"An error occurred while fetching the price of crypto {crypto_name}: {str(err)}"
+                },
+                status=500,
+            )
 
         if response.status_code != 200:
             return JsonResponse(
