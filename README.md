@@ -16,22 +16,22 @@ git clone https://github.com/hoelsch/crypto-assets-server.git
 cd crypto-assets-server
 ```
 
-3. Install dependencies
+3. Install dependencies:
 ```sh
 python -m pip install -r requirements.txt
 ```
 
-4. Create database schema
+4. Create database schema:
 ```sh
 python manage.py migrate
 ```
 
-5. Initialize database
+5. Initialize database:
 ```sh
 python manage.py loaddata cryptos.json
 ```
 
-6. Run server
+6. Run server:
 ```sh
 python manage.py runserver
 ```
@@ -40,12 +40,12 @@ python manage.py runserver
 
 As an alternative, the app can also be executed in a Docker container:
 
-1. Build Docker image
+1. Build Docker image:
 ```sh
 docker build -t crypto-assets-server .
 ```
 
-2. Run Docker container
+2. Run Docker container:
 ```sh
 docker run -p 8000:8000 crypto-assets-server
 ```
