@@ -11,6 +11,11 @@ Backend Server for [Crypto Assets Management App](https://github.com/hoelsch/cry
 git clone https://github.com/hoelsch/crypto-assets-server.git
 ```
 
+2. Change directory:
+```sh
+cd crypto-assets-server
+```
+
 2. Install dependencies
 ```sh
 python -m pip install -r requirements.txt
