@@ -1,4 +1,5 @@
 from unittest.mock import patch
+import requests
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -57,6 +58,36 @@ class CryptoPriceTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(response["Content-Type"], "application/json")
+
+        json_data = response.json()
+
+        self.assertIn("error", json_data)
+
+    @patch("requests.get")
+    def test_get_crypto_price_fails_for_timeout(self, mock_request):
+        mock_request.side_effect = requests.Timeout()
+
+        response = self.client.get(
+            reverse("crypto-price", kwargs={"crypto": "bitcoin"})
+        )
+
+        self.assertEqual(response.status_code, 504)
+        self.assertEqual(response["Content-Type"], "application/json")
+
+        json_data = response.json()
+
+        self.assertIn("error", json_data)
+
+    @patch("requests.get")
+    def test_get_crypto_price_fails_for_request_exception(self, mock_request):
+        mock_request.side_effect = requests.RequestException()
+
+        response = self.client.get(
+            reverse("crypto-price", kwargs={"crypto": "bitcoin"})
+        )
+
+        self.assertEqual(response.status_code, 500)
         self.assertEqual(response["Content-Type"], "application/json")
 
         json_data = response.json()
