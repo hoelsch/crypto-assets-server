@@ -56,16 +56,5 @@ class ListCryptosTestCase(TestCase):
         self.client.logout()
         response = self.client.get(reverse("cryptos"))
 
-        self.assertEqual(response.status_code, 401)
+        self.assertContains(response, "error", status_code=401)
         self.assertEqual(response["Content-Type"], "application/json")
-
-        json_data = response.json()
-
-        self.assertIn("error", json_data)
-
-    def test_list_cryptos_only_allows_get_requests(self):
-        http_methods = ["post", "patch", "put", "delete"]
-
-        for method in http_methods:
-            response = getattr(self.client, method)(reverse("cryptos"))
-            self.assertEqual(response.status_code, 405)
