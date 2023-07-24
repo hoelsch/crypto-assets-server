@@ -3,8 +3,8 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.http import require_http_methods
 
-from .models import Crypto
 from crypto_assets_server.mixins import CustomLoginRequiredMixin
+from .models import Crypto
 
 
 class CryptoListView(CustomLoginRequiredMixin, View):
