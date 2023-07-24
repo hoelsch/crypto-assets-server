@@ -109,7 +109,7 @@ curl \
 {"message": "Successfully logged in", "user_id": 1}
 ```
 
-The response also contains a session cookie in its header.
+The response contains a session cookie in its header that has to be sent with all upcoming requests which require authentication.
 
 ---
 
